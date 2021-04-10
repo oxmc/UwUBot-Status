@@ -29,6 +29,29 @@ notifier.notify ({
                console.log("Notification timed out!")
             });
 }
+
+function updatedown() {
+notifier.notify ({
+               title: 'Update Downloaded',
+               message: 'Update downloaded, you can ignore this message.',
+               icon: icondir + "updatedownloaded.png"
+               sound: true,  // Only Notification Center or Windows Toasters
+               wait: true    // Wait with callback, until user action is taken 
+               against notification
+            
+            }, function (err, response) {
+               // Response is response from notification
+            });
+
+            notifier.on('click', function (notifierObject, options) {
+               console.log("User clicked on the notification, doing nothing.")
+            });
+
+            notifier.on('timeout', function (notifierObject, options) {
+               console.log("Notification timed out!")
+            });
+}
+
 let trayIcon = new Tray()
 
          const trayMenuTemplate = [
@@ -49,6 +72,13 @@ let trayIcon = new Tray()
                click: function () {
                   console.log("Clicked on Help")
                }
+            },
+           
+            {
+               label: 'about',
+               click: function () {
+                  console.log("Clicked on about")
+               }
             }
          ]
          
@@ -63,7 +93,7 @@ function createWindow () {
       nodeIntegration: true,
     },
   });
-  mainWindow.loadFile('./src/view/index.html');
+  mainWindow.loadFile(appdir + '/view/index.html');
   mainWindow.on('closed', function () {
     mainWindow = null;
   });
@@ -77,9 +107,10 @@ app.on('ready', () => {
 });
 
 app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') {
+  //Remove macos detection
+  //if (process.platform !== 'darwin') {
     app.quit();
-  }
+  //}
 });
 
 app.on('activate', function () {
@@ -93,11 +124,13 @@ ipcMain.on('app_version', (event) => {
 });
 
 autoUpdater.on('update-available', () => {
-  mainWindow.webContents.send('update_available');
+  //mainWindow.webContents.send('update_available');
+  updateavil();
 });
 
 autoUpdater.on('update-downloaded', () => {
-  mainWindow.webContents.send('update_downloaded');
+  //mainWindow.webContents.send('update_downloaded');
+  updatedown();
 });
 
 ipcMain.on('restart_app', () => {
