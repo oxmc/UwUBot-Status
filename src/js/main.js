@@ -4,91 +4,65 @@ const notifier = require('node-notifier');
 const url = require('url');
 const path = require('path');
 
-var appdir = path.join(__dirname, '/src')
-var icondir = appdir + "/icons"
+var appdir = path.join(app.getAppPath(), '/src')
+var icondir = path.join(appdir, '/icons')
+
+console.log('appdir: ' + appdir)
+console.log('icondir: ' + icondir)
+
+function notification(mode) {
+  if (mode == "1") {
+    notifier.notify({
+        title: 'Update availible.',
+        message: 'An update is availible, click here to update.',
+        icon: icondir + '/updateavil.png',
+        sound: true,
+        wait: true
+      },
+      function (err, response1) {
+        if (response1 == "activate") {
+          console.log("User wants to update, shutting down app...");
+          app.quit();
+        }
+      }
+    );
+  } else if (mode == "2") {
+    notifier.notify({
+        title: 'Update downloaded.',
+        message: 'An update has been downloaded, click here to update.',
+        icon: icondir + '/updatedown.png',
+        sound: true,
+        wait: true
+      },
+      function (err, response) {
+        if (response == "activate") {
+          console.log("User wants to update, shutting down app...");
+          app.quit();
+        }
+      }
+    );
+  }
+}
 
 let mainWindow;
-function updateavil() {
-notifier.notify ({
-               title: 'Update availible',
-               message: 'There is a new version of this app availible, click here to update.',
-               icon: icondir + "update.png"
-               sound: true,  // Only Notification Center or Windows Toasters
-               wait: true    // Wait with callback, until user action is taken 
-               against notification
-            
-            }, function (err, response) {
-               // Response is response from notification
-            });
+let tray;
 
-            notifier.on('click', function (notifierObject, options) {
-               console.log("User clicked on the notification, updating app.")
-            });
+// Don't show the app in the doc
+app.dock.hide()
 
-            notifier.on('timeout', function (notifierObject, options) {
-               console.log("Notification timed out!")
-            });
+const createTray = () => {
+  tray = new Tray(path.join(icondir, '/tray-icon.png'))
+  //tray.on('right-click', toggleWindow)
+  //tray.on('double-click', toggleWindow)
+  tray.on('click', function (event) {
+    //mainWindow.openDevTools({mode: 'detach'})
+  })
 }
-
-function updatedown() {
-notifier.notify ({
-               title: 'Update Downloaded',
-               message: 'Update downloaded, you can ignore this message.',
-               icon: icondir + "updatedownloaded.png"
-               sound: true,  // Only Notification Center or Windows Toasters
-               wait: true    // Wait with callback, until user action is taken 
-               against notification
-            
-            }, function (err, response) {
-               // Response is response from notification
-            });
-
-            notifier.on('click', function (notifierObject, options) {
-               console.log("User clicked on the notification, doing nothing.")
-            });
-
-            notifier.on('timeout', function (notifierObject, options) {
-               console.log("Notification timed out!")
-            });
-}
-
-let trayIcon = new Tray()
-
-         const trayMenuTemplate = [
-            {
-               label: 'UwUBot Status',
-               enabled: false
-            },
-            
-            {
-               label: 'Settings',
-               click: function () {
-                  console.log("Clicked on settings")
-               }
-            },
-            
-            {
-               label: 'Help',
-               click: function () {
-                  console.log("Clicked on Help")
-               }
-            },
-           
-            {
-               label: 'about',
-               click: function () {
-                  console.log("Clicked on about")
-               }
-            }
-         ]
-         
-         let trayMenu = Menu.buildFromTemplate(trayMenuTemplate)
-         trayIcon.setContextMenu(trayMenu)
 
 function createWindow () {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1040,
+    height: 900,
     webPreferences: {
       nodeIntegration: true,
     },
@@ -104,6 +78,7 @@ function createWindow () {
 
 app.on('ready', () => {
   createWindow();
+  createTray()
 });
 
 app.on('window-all-closed', function () {
@@ -125,12 +100,12 @@ ipcMain.on('app_version', (event) => {
 
 autoUpdater.on('update-available', () => {
   //mainWindow.webContents.send('update_available');
-  updateavil();
+  notification(1)
 });
 
 autoUpdater.on('update-downloaded', () => {
   //mainWindow.webContents.send('update_downloaded');
-  updatedown();
+  notification(2)
 });
 
 ipcMain.on('restart_app', () => {
