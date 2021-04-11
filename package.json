@@ -1,11 +1,11 @@
 {
-  "name": "auto-update-electron-UwUBot",
-  "version": "1.0.0",
+  "name": "UwUBot-Status",
+  "version": "1.0.1",
   "description": "An auto-updating app to show the status of UwUBot, built with electron-builder.",
   "main": "src/js/main.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/oxmc/auto-update-electron-UwUBot.git"
+    "url": "https://github.com/oxmc/UwUBot-Status.git"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -52,11 +52,33 @@ app.dock.hide()
 
 const createTray = () => {
   tray = new Tray(path.join(icondir, '/tray-icon.png'))
-  //tray.on('right-click', toggleWindow)
-  //tray.on('double-click', toggleWindow)
-  tray.on('click', function (event) {
-    //mainWindow.openDevTools({mode: 'detach'})
-  })
+  const trayMenuTemplate = [
+            {
+               label: 'UwUBot Status',
+               enabled: false
+            },
+            
+            {
+               label: 'Version: ' + app.getVersion(),
+               enabled: false
+            }//,
+
+            //{
+            //   label: 'Settings',
+            //   click: function () {
+            //      console.log("Clicked on settings")
+            //   }
+            //},
+            
+            //{
+            //   label: 'Help',
+            //   click: function () {
+            //      console.log("Clicked on Help")
+            //   }
+            //}
+         ]
+  let trayMenu = Menu.buildFromTemplate(trayMenuTemplate)
+  tray.setContextMenu(trayMenu)
 }
 
 function createWindow () {
